@@ -1,11 +1,35 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate,login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
-from .forms import LogInForm, SignUpForm
+from django.views import generic
+from .forms import LogInForm, SignUpForm, PostForm
+from microblogs.models import User
 
+def new_post(request):
+    pass
+
+def show_user(request, user_id):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404('User does not exist')
+
+    return render(request, 'show_user.html', context={'user': user})
+
+def user_list(request):
+    context = {}
+    context['user_list'] = User.objects.all()
+    return render(request, 'user_list.html', context)
+        
 def feed(request):
-    form = LogInForm()
-    return render(request, 'log_in.html', {'form': form})
+    form = PostForm(request.POST)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        author = request.user
+        obj.author = author
+        obj.save()
+        form = PostForm()
+    return render(request, 'feed.html', {'form': form})
 
 def log_in(request):
     if request.method == 'POST':

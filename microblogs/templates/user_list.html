@@ -1,0 +1,14 @@
+{% block content %}
+  <h1>User List</h1>
+  {% if user_list %}
+  <ul>
+    {% for user in user_list %}
+      <li>
+          <a href='{% url 'show_user' user.pk %}'>{{ user.username }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>No user registered yet.</p>
+  {% endif %}
+{% endblock %}
